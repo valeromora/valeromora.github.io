@@ -1,3 +1,8 @@
 # Privacy: cv_english.pdf contains the phone number and email — must never be
 # committed to the public valeromora.github.io repository.
 cv_english.pdf
+
+# Platform / editor / tooling noise
+.DS_Store
+node_modules/
+*.swp
