@@ -8,10 +8,9 @@
 
 /* --------------------------------------------------------------------------
    Contact form endpoint (scope amendment — Formspree)
-   TODO: replace with the real form ID after the user signs up. Swapping this
-   one constant is the ONLY change needed for the form to send.
+   Real form registered by the site owner; endpoint hidden from visitors.
    -------------------------------------------------------------------------- */
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xdeowprb";
 
 (function () {
   "use strict";
