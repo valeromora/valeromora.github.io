@@ -128,6 +128,33 @@ img {
 }
 
 /* --------------------------------------------------------------------------
+   3. Accessibility primitives
+   -------------------------------------------------------------------------- */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: 0 0 var(--radius) 0;
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
    4. Hero
    -------------------------------------------------------------------------- */
 
@@ -436,5 +463,22 @@ img {
   .nav {
     padding-left: var(--sp-12);
     padding-right: var(--sp-12);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. Reduced motion (NFR-02)
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
   }
 }
