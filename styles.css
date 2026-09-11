@@ -9,6 +9,7 @@
    -------------------------------------------------------------------------- */
 
 [data-theme="light"] {
+  color-scheme: light;
   --color-bg: #f7f8fb;
   --color-surface: #ffffff;
   --color-text: #1c2333;
@@ -19,6 +20,7 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --color-bg: #0e1420;
   --color-surface: #161f30;
   --color-text: #e8ecf4;
@@ -29,6 +31,7 @@
 }
 
 :root {
+  color-scheme: light dark;
   /* Spacing scale — 4px base unit (design CSS architecture) */
   --sp-1: 0.25rem;
   --sp-2: 0.5rem;
@@ -93,10 +96,12 @@ h3 {
 
 h1 {
   font-size: var(--text-h1);
+  letter-spacing: -0.02em;
 }
 
 h2 {
   font-size: var(--text-h2);
+  letter-spacing: -0.01em;
 }
 
 h3 {
@@ -105,6 +110,23 @@ h3 {
 
 p {
   margin-bottom: var(--sp-4);
+}
+
+/* Readable measure for body copy (portfolio-visual-polish type hierarchy) */
+.section > p,
+.hero__summary,
+.entry p {
+  max-width: 65ch;
+}
+
+/* Section eyebrow — small caps label above the heading */
+.eyebrow {
+  margin-bottom: var(--sp-2);
+  color: var(--color-accent);
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 p:last-child {
@@ -211,7 +233,16 @@ img {
 }
 
 .social-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
   font-weight: 600;
+}
+
+.social-links svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -281,6 +312,18 @@ img {
   color: var(--color-accent);
 }
 
+/* Scrolled treatment (toggled by script.js scrollspy module) */
+.nav.is-scrolled {
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.12);
+}
+
+/* Active section link — exactly one carries aria-current="true" */
+.nav__list a[aria-current="true"] {
+  background-color: var(--color-surface);
+  color: var(--color-accent);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
 /* --------------------------------------------------------------------------
    6. Sections
    -------------------------------------------------------------------------- */
@@ -329,6 +372,24 @@ img {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.entry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+/* Scroll-triggered reveal (progressive enhancement: JS adds .reveal) */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 .entry__title {
@@ -412,6 +473,31 @@ img {
 .theme-toggle:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
+}
+
+.theme-toggle svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+
+/* Grouped tech skills (portfolio-visual-polish skills content) */
+.skills-groups {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-6);
+}
+
+.skills-group {
+  padding: var(--sp-5);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.skills-group__title {
+  margin-bottom: var(--sp-3);
+  font-size: 1rem;
 }
 
 .contact-form {
@@ -555,6 +641,10 @@ img {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .skills-groups {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   .section {
     padding: var(--sp-12) var(--sp-8);
   }
@@ -596,6 +686,11 @@ img {
   *::after {
     transition: none !important;
     animation: none !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   html {
