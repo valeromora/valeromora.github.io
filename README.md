@@ -47,6 +47,14 @@ This repository is configured as a user/org site, so it must live in a repo name
 No build step is required — GitHub Pages serves `index.html` from the repository
 root directly.
 
+An empty `.nojekyll` file at the root bypasses Jekyll processing so
+underscore/dotfile assets publish unprocessed. Unknown paths serve the branded
+`404.html` fallback page (reuses `styles.css`, links back home).
+
+The hero portrait (`PRO_8805_3.jpg`) is kept under a 200 KB budget at the same
+path; recompress in place if it grows past the budget and keep the
+`width`/`height` attributes in sync to avoid layout shift.
+
 ## Privacy notes
 
 - Contact is handled through a **Formspree form**. The form posts to a Formspree

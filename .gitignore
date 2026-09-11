@@ -2,6 +2,9 @@
 # committed to the public valeromora.github.io repository.
 cv_english.pdf
 
+# Local agent workspace (research notes, drafts) — never deployed.
+.atl/
+
 # Platform / editor / tooling noise
 .DS_Store
 node_modules/

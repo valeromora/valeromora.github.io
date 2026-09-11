@@ -2,7 +2,9 @@
    Personal webpage — script.js
    Vanilla JS behaviors, no build step, no dependencies (design decision 3).
    Modules: nav toggle, smooth scroll (reduced-motion guard), dark mode
-   toggle + localStorage persistence, and the Formspree contact form handler
+   toggle + localStorage persistence (mirrors the inline head script),
+   reveal + scrollspy observers (reduced-motion guards), and the Formspree
+   contact form handler
    (scope amendment — replaces the former email obfuscation module).
    ========================================================================== */
 
@@ -59,7 +61,8 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/xdeowprb";
     });
   }
 
-  /* 3. Dark mode — localStorage override, prefers-color-scheme as default */
+  /* 3. Dark mode — mirrors the inline head script precedence
+     (localStorage override, prefers-color-scheme as default) */
   function initDarkMode() {
     const root = document.documentElement;
     const toggle = document.querySelector("[data-theme-toggle]");
@@ -68,12 +71,12 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/xdeowprb";
     const stored = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const initial = stored === "dark" || stored === "light" ? stored : prefersDark ? "dark" : "light";
-    root.setAttribute("data-theme", initial);
+    root.dataset.theme = initial;
     updateThemeToggle(toggle, initial);
 
     toggle.addEventListener("click", () => {
-      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
       localStorage.setItem("theme", next);
       updateThemeToggle(toggle, next);
     });
@@ -81,8 +84,87 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/xdeowprb";
 
   function updateThemeToggle(toggle, theme) {
     const dark = theme === "dark";
-    toggle.textContent = dark ? "Light" : "Dark";
+    const label = toggle.querySelector("[data-theme-label]");
+    if (label) label.textContent = dark ? "Light" : "Dark";
+    else toggle.textContent = dark ? "Light" : "Dark";
+    const moon = toggle.querySelector("[data-theme-icon-moon]");
+    const sun = toggle.querySelector("[data-theme-icon-sun]");
+    /* When dark, offer the light (sun) icon; when light, offer moon. */
+    if (moon && sun) {
+      moon.hidden = dark;
+      sun.hidden = !dark;
+    }
     toggle.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+  }
+
+  /* 5. Reveal — IntersectionObserver adds .is-visible; reduced-motion shows instantly */
+  function initReveal() {
+    const targets = document.querySelectorAll(".section, .entry, .skills-group");
+    if (!targets.length) return;
+    targets.forEach((el) => el.classList.add("reveal"));
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      targets.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+    if (!("IntersectionObserver" in window)) {
+      targets.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    targets.forEach((el) => observer.observe(el));
+  }
+
+  /* 6. Scrollspy — one aria-current at a time + .is-scrolled past threshold */
+  function initScrollspy() {
+    const nav = document.querySelector(".nav");
+    const links = Array.from(document.querySelectorAll('.nav__list a[href^="#"]'));
+    if (!links.length) return;
+    const sections = links
+      .map((link) => document.querySelector(link.getAttribute("href")))
+      .filter(Boolean);
+    if (!sections.length) return;
+
+    function setActive(id) {
+      links.forEach((link) => {
+        if (link.getAttribute("href") === "#" + id) {
+          link.setAttribute("aria-current", "true");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    }
+
+    function updateScrolled() {
+      if (nav) nav.classList.toggle("is-scrolled", window.scrollY > 4);
+    }
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !("IntersectionObserver" in window)
+    ) {
+      return;
+    }
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-40% 0px -55%" }
+    );
+    sections.forEach((section) => spy.observe(section));
   }
 
   /* 4. Contact form — fetch POST to Formspree with idle/sending/success/error states */
@@ -148,6 +230,8 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/xdeowprb";
     initNavToggle();
     initSmoothScroll();
     initDarkMode();
+    initReveal();
+    initScrollspy();
     initContactForm();
   });
 })();
